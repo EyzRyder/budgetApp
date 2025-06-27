@@ -1,0 +1,19 @@
+CREATE DATABASE IF NOT EXISTS budget_app;
+USE budget_app;
+
+CREATE TABLE budgets (
+  id VARCHAR(255) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  createdAt BIGINT NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  color VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE expenses (
+  id VARCHAR(255) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  createdAt BIGINT NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  budgetId VARCHAR(255) NOT NULL,
+  FOREIGN KEY (budgetId) REFERENCES budgets(id) ON DELETE CASCADE
+);

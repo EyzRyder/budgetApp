@@ -1,0 +1,8 @@
+/* dashboard */
+.dashboard {
+  display: -ms-grid;
+  display: grid;
+  gap: var(--space-lg);
+  place-items: start;
+  width: 100%;
+}

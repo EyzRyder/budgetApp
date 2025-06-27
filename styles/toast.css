@@ -1,0 +1,4 @@
+/* toast */
+.Toastify__toast-body {
+  font-size: var(--fs-300);
+}
