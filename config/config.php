@@ -1,7 +1,7 @@
 
 <?php
 return [
-  'use_mysql' => false, 
+  'use_mysql' => false,
   'sqlite_path' => __DIR__ . '/../db/budget.sqlite',
   'mysql' => [
     'host' => 'localhost',

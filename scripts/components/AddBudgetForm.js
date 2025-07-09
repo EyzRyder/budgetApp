@@ -1,57 +1,60 @@
-import { eventFirstAddBudgetForm,eventAddBudgetForm } from "../events.js"
-import { createBudget } from "../api.js"
+import { eventFirstAddBudgetForm, eventAddBudgetForm } from "../events.js";
+import { createBudget } from "../api.js";
 class AddBudgetForm extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: "open" });
-    }
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
 
-    connectedCallback() {
-        this.build();
-        this.style(this.shadowRoot);
-        this.form = this.shadowRoot.querySelector("form");
-        this.input = this.shadowRoot.querySelector("#newBudget");
-        eventFirstAddBudgetForm();
-        eventAddBudgetForm();
-        this.form.addEventListener("submit", (e) => {
-            e.preventDefault();
+  connectedCallback() {
+    this.build();
+    this.style(this.shadowRoot);
+    this.form = this.shadowRoot.querySelector("form");
+    this.input = this.shadowRoot.querySelector("#newBudget");
+    eventFirstAddBudgetForm();
+    eventAddBudgetForm();
+    this.form.addEventListener("submit", (e) => {
+      e.preventDefault();
 
-            const formData = new FormData(this.form);
-            const data = {
-                name: formData.get("newBudget"),
-                amount: parseFloat(formData.get("newBudgetAmount")),
-            };
+      const formData = new FormData(this.form);
+      const data = {
+        name: formData.get("newBudget"),
+        amount: parseFloat(formData.get("newBudgetAmount")),
+      };
 
-            // console.log("Budget submitted:", data);
+      // console.log("Budget submitted:", data);
 
-            const id = this.getAttribute('id');
+      const id = this.getAttribute("id");
 
-            async function sendData(submitButton, form, input, data, id) {
-                submitButton.disabled = true;
-                submitButton.textContent = "Submitting…";
-                const result = await createBudget({ name:data.name, amount:data.amount });
-
-                await setTimeout(() => {
-                    form.reset();
-                    input.focus();
-                    submitButton.disabled = false;
-                    submitButton.textContent = "Create budget";
-                }, 5000);
-                window.dispatchEvent(
-                    new CustomEvent(id, {
-                        detail: { key: "budget", value: result },
-                    })
-                );
-            }
-
-            sendData(this.submitButton, this.form, this.input, data, id)
+      async function sendData(submitButton, form, input, data, id) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Submitting…";
+        const result = await createBudget({
+          name: data.name,
+          amount: data.amount,
         });
-    }
 
-    build() {
-        const id = this.getAttribute("id") || 'addbudgetform';
-        this.setAttribute('id', id)
-        this.shadowRoot.innerHTML = `
+        await setTimeout(() => {
+          form.reset();
+          input.focus();
+          submitButton.disabled = false;
+          submitButton.textContent = "Create budget";
+        }, 5000);
+        window.dispatchEvent(
+          new CustomEvent(id, {
+            detail: { key: "budget", value: result },
+          }),
+        );
+      }
+
+      sendData(this.submitButton, this.form, this.input, data, id);
+    });
+  }
+
+  build() {
+    const id = this.getAttribute("id") || "addbudgetform";
+    this.setAttribute("id", id);
+    this.shadowRoot.innerHTML = `
       <div class="form-wrapper">
         <h2 class="h3">Create budget</h2>
         <form class="grid-sm" id="${id}">
@@ -69,12 +72,12 @@ class AddBudgetForm extends HTMLElement {
       </div>
     `;
 
-        this.submitButton = this.shadowRoot.querySelector("button");
-    }
+    this.submitButton = this.shadowRoot.querySelector("button");
+  }
 
-    style(shadowRoot) {
-        const sheet = new CSSStyleSheet();
-        sheet.replaceSync(`
+  style(shadowRoot) {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(`
             *,
 *::before,
 *::after {
@@ -679,9 +682,8 @@ table a {
 }
 
             `);
-        shadowRoot.adoptedStyleSheets = [sheet];
-
-    }
+    shadowRoot.adoptedStyleSheets = [sheet];
+  }
 }
 
 customElements.define("add-budget-form", AddBudgetForm);

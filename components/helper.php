@@ -1,11 +1,11 @@
 <?php
 function formatCurrency($amount)
 {
-    if (class_exists('NumberFormatter')) {
-        return $formatter = new NumberFormatter('pt_BR', style: NumberFormatter::CURRENCY);
-    } else {
+    //if (class_exists('NumberFormatter')) {
+    //    return $formatter = new NumberFormatter('pt_BR', style: NumberFormatter::CURRENCY);
+    //} else {
         return 'R$ ' . number_format($amount, 2, ',', '.');
-    }
+    //}
 }
 function formatDateToLocaleString($timestamp)
 {

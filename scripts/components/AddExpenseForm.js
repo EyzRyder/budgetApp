@@ -1,74 +1,77 @@
-import { eventAddExpenseForm } from "../events.js"
-import { createExpense } from "../api.js"
+import { eventAddExpenseForm } from "../events.js";
+import { createExpense } from "../api.js";
 class AddExpenseForm extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: "open" });
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.budgets = [];
+  }
+
+  static get observedAttributes() {
+    return ["data-budgets"];
+  }
+
+  attributeChangedCallback(name, oldVal, newVal) {
+    if (name === "data-budgets") {
+      try {
+        this.budgets = JSON.parse(newVal) || [];
+      } catch (e) {
+        console.error("Invalid budgets JSON", e);
         this.budgets = [];
+      }
+      this.build();
     }
+  }
 
-    static get observedAttributes() {
-        return ["data-budgets"];
-    }
+  connectedCallback() {
+    this.build();
+    eventAddExpenseForm();
+    this.style(this.shadowRoot);
+    this.form = this.shadowRoot.querySelector("form");
+    this.input = this.shadowRoot.querySelector("#newExpense");
 
-    attributeChangedCallback(name, oldVal, newVal) {
-        if (name === "data-budgets") {
-            try {
-                this.budgets = JSON.parse(newVal) || [];
-            } catch (e) {
-                console.error("Invalid budgets JSON", e);
-                this.budgets = [];
-            }
-            this.build();
-        }
-    }
+    this.form.addEventListener("submit", (e) => {
+      e.preventDefault();
 
-    connectedCallback() {
-        this.build();
-        eventAddExpenseForm()
-        this.style(this.shadowRoot);
-        this.form = this.shadowRoot.querySelector("form");
-        this.input = this.shadowRoot.querySelector("#newExpense");
+      const formData = new FormData(this.form);
+      const data = Object.fromEntries(formData.entries());
 
+      console.log("Expense submitted:", data);
 
-        this.form.addEventListener("submit", (e) => {
-            e.preventDefault();
+      const id = this.getAttribute("id");
 
-            const formData = new FormData(this.form);
-            const data = Object.fromEntries(formData.entries());
-
-            console.log("Expense submitted:", data);
-
-            const id = this.getAttribute('id');
-
-            async function sendData(submitButton, form, input, data, id) {
-                submitButton.disabled = true;
-                submitButton.innerHTML = "<span>Submitting…</span>";
-                const result = await createExpense({ name: data.newExpense, amount: data.newExpenseAmount, budgetId: data.newExpenseBudget });
-
-                await setTimeout(() => {
-                    form.reset();
-                    input.focus();
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = "<span>Add Expense</span>";
-                }, 5000);
-                window.dispatchEvent(
-                    new CustomEvent(id, {
-                        detail: { key: "expense", value: result },
-                    })
-                );
-            }
-
-            sendData(this.submitButton, this.form, this.input, data, id)
+      async function sendData(submitButton, form, input, data, id) {
+        submitButton.disabled = true;
+        submitButton.innerHTML = "<span>Submitting…</span>";
+        const result = await createExpense({
+          name: data.newExpense,
+          amount: data.newExpenseAmount,
+          budgetId: data.newExpenseBudget,
         });
-    }
 
-    build() {
-        const id = this.getAttribute("id") || 'addexpenseform';
-        this.setAttribute('id', id)
+        await setTimeout(() => {
+          form.reset();
+          input.focus();
+          submitButton.disabled = false;
+          submitButton.innerHTML = "<span>Add Expense</span>";
+        }, 5000);
+        window.dispatchEvent(
+          new CustomEvent(id, {
+            detail: { key: "expense", value: result },
+          }),
+        );
+      }
+
+      sendData(this.submitButton, this.form, this.input, data, id);
+    });
+  }
+
+  build() {
+    const id = this.getAttribute("id") || "addexpenseform";
+    this.setAttribute("id", id);
     const isSingleBudget = this.budgets.length === 1;
     const budgetName = isSingleBudget ? this.budgets[0].name : "";
-        this.shadowRoot.innerHTML = `
+    this.shadowRoot.innerHTML = `
         <div class="form-wrapper">
         <h2 class="h3">Add New <span class="accent">${budgetName}</span> Expense</h2>
         <form class="grid-sm">
@@ -84,34 +87,38 @@ class AddExpenseForm extends HTMLElement {
           </div>
 
 
-     ${!isSingleBudget ? `
+     ${
+       !isSingleBudget
+         ? `
             <div class="grid-xs">
               <label for="newExpenseBudget">Budget Category</label>
               <select name="newExpenseBudget" id="newExpenseBudget" required>
                 ${this.budgets
                   .sort((a, b) => a.createdAt - b.createdAt)
-                  .map(b => `<option value="${b.id}">${b.name}</option>`)
+                  .map((b) => `<option value="${b.id}">${b.name}</option>`)
                   .join("")}
               </select>
             </div>
-          ` : `
+          `
+         : `
             <input type="hidden" name="newExpenseBudget" value="${this.budgets[0]?.id || ""}">
-          `}
+          `
+     }
 
           <button type="submit" class="btn btn--dark">
-            <span>Add Expense</span> 
+            <span>Add Expense</span>
           </button>
         </form>
       </div>
- 
+
     `;
 
-        this.submitButton = this.shadowRoot.querySelector("button");
-    }
+    this.submitButton = this.shadowRoot.querySelector("button");
+  }
 
-    style(shadowRoot) {
-        const sheet = new CSSStyleSheet();
-        sheet.replaceSync(`
+  style(shadowRoot) {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(`
             *,
 *::before,
 *::after {
@@ -716,9 +723,8 @@ table a {
 }
 
             `);
-        shadowRoot.adoptedStyleSheets = [sheet];
-
-    }
+    shadowRoot.adoptedStyleSheets = [sheet];
+  }
 }
 
 customElements.define("add-expense-form", AddExpenseForm);

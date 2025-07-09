@@ -55,7 +55,7 @@
       style="--accent: ' . $budget["color"] . '
       <h1 class="h2">
         <span class="accent">' . htmlspecialchars($budget["name"]) . '</span> Overview
-      </h1> 
+      </h1>
       <div class="flex-lg">';
     BudgetItem($budget, true);
     echo "<add-expense-form data-budgets='" . json_encode([$budget]) . "'></add-expense-form>";

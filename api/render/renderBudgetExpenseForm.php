@@ -13,7 +13,6 @@ echo "<div class='grid-lg'>
                 <div class='flex-lg'>
                 <add-budget-form></add-budget-form>
                 <add-expense-form data-budgets='".json_encode($budgets)."'></add-expense-form>";
-// AddExpenseForm($budgets);
 echo '</div>';
 echo '<h2>Existing Budgets</h2>
                 <div class="budgets">';

@@ -1,5 +1,5 @@
 import { deleteBudget } from "../api.js";
-import { eventDeletebudgetForm } from "../events.js"
+import { eventDeletebudgetForm } from "../events.js";
 class BtnDeleteBudget extends HTMLElement {
   constructor() {
     super();
@@ -32,10 +32,15 @@ class BtnDeleteBudget extends HTMLElement {
           submitButton.disabled = false;
           submitButton.textContent = "Delete Budget 🗑";
         }, 5000);
-        window.dispatchEvent(new CustomEvent("deletedbudget", { detail: { key: "deletedbudget", value: result }, bubbles: true }));
+        window.dispatchEvent(
+          new CustomEvent("deletedbudget", {
+            detail: { key: "deletedbudget", value: result },
+            bubbles: true,
+          }),
+        );
       }
 
-      sendData(this.submitButton, this.form, id)
+      sendData(this.submitButton, this.form, id);
     });
   }
 
@@ -51,7 +56,6 @@ class BtnDeleteBudget extends HTMLElement {
       </form>
     `;
     this.submitButton = this.shadowRoot.querySelector("button");
-
   }
 
   style(shadowRoot) {
@@ -662,11 +666,7 @@ table a {
 
             `);
     shadowRoot.adoptedStyleSheets = [sheet];
-
   }
-
-
 }
-
 
 customElements.define("delete-budget-form", BtnDeleteBudget);

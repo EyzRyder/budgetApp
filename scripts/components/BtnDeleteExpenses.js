@@ -1,12 +1,12 @@
 import { deleteExpense } from "../api.js";
-import {eventDeleteExpenseForm} from "../events.js"
+import { eventDeleteExpenseForm } from "../events.js";
 class BtnDeleteExpenses extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
   }
 
-    connectedCallback() {
+  connectedCallback() {
     this.build();
     eventDeleteExpenseForm();
     this.style(this.shadowRoot);
@@ -14,8 +14,8 @@ class BtnDeleteExpenses extends HTMLElement {
     const form = this.shadowRoot.querySelector("#deleteForm");
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-    const name = this.getAttribute("expense-name") || "";
-    const id = this.getAttribute("expense-id") || "";
+      const name = this.getAttribute("expense-name") || "";
+      const id = this.getAttribute("expense-id") || "";
 
       const confirmed = confirm(`Are you sure you want to delete "${name}"?`);
       if (!confirmed) return;
@@ -33,10 +33,15 @@ class BtnDeleteExpenses extends HTMLElement {
           submitButton.disabled = false;
           submitButton.textContent = "🗑 Delete";
         }, 5000);
-        window.dispatchEvent(new CustomEvent("deletedexpense", { detail: { key: "deletedexpense",value:result }, bubbles: true }));
+        window.dispatchEvent(
+          new CustomEvent("deletedexpense", {
+            detail: { key: "deletedexpense", value: result },
+            bubbles: true,
+          }),
+        );
       }
 
-      sendData(this.submitButton, this.form, id)
+      sendData(this.submitButton, this.form, id);
     });
   }
 
@@ -57,7 +62,6 @@ class BtnDeleteExpenses extends HTMLElement {
       </form>
     `;
     this.submitButton = this.shadowRoot.querySelector("button");
-
   }
 
   style(shadowRoot) {
@@ -668,11 +672,7 @@ table a {
 
             `);
     shadowRoot.adoptedStyleSheets = [sheet];
-
   }
-
-
 }
-
 
 customElements.define("delete-expense-form", BtnDeleteExpenses);

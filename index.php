@@ -13,12 +13,12 @@
   <nav-component></nav-component>
   <main>
     <?php
-    require_once(dirname(path: __FILE__) . "/components/Intro.php");
+    require_once(__DIR__ . "/components/Intro.php");
     Intro();
     ?>
     <div id="dashboard" class="dashboard">
       <h1>
-        Welcome back, <span class="accent" id="usernamespan"></span>
+        Welcomf back, <span class="accent" id="usernamespan"></span>
       </h1>
       <div class="grid-sm" id="budgetexpensegrid">
         <?php
@@ -28,9 +28,9 @@
         $expenses = [];
 
         if (count($budgets) > 0) {
-          require_once(dirname(path: __FILE__) . '/api/render/renderBudgetExpenseForm.php');
+          require_once(__DIR__ . '/api/render/renderBudgetExpenseForm.php');
         } else {
-          require_once(dirname(path: __FILE__) . '/api/render/renderInicialBudgetForm.php');
+          require_once(__DIR__ . '/api/render/renderInicialBudgetForm.php');
         }
         ?>
       </div>

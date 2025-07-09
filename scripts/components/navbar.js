@@ -1,52 +1,49 @@
 class NavComponent extends HTMLElement {
-    constructor() {
-        super();
-        const shadow = this.attachShadow({ mode: "open" });
-        shadow.appendChild(this.build());
-        this.style(shadow);
-        this.initInteractivity(shadow);
-    }
-    
-    build() {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({ mode: "open" });
+    shadow.appendChild(this.build());
+    this.style(shadow);
+    this.initInteractivity(shadow);
+  }
 
-        const nav = document.createElement('nav');
-        nav.setAttribute("id", "navbar")
+  build() {
+    const nav = document.createElement("nav");
+    nav.setAttribute("id", "navbar");
 
-        const link = document.createElement('a');
-        link.setAttribute('href', '/WEB');
-        link.setAttribute('aria-label', 'Go to home');
+    const link = document.createElement("a");
+    link.setAttribute("href", "/WEB");
+    link.setAttribute("aria-label", "Go to home");
 
-        const logo = document.createElement('img');
-        logo.src = '/WEB/assets/logomark.svg';
-        logo.alt = 'logo';
-        logo.height = 30;
+    const logo = document.createElement("img");
+    logo.src = "/WEB/assets/logomark.svg";
+    logo.alt = "logo";
+    logo.height = 30;
 
-        const spanTitle = document.createElement('span');
-        spanTitle.textContent = 'HomeBudget';
+    const spanTitle = document.createElement("span");
+    spanTitle.textContent = "HomeBudget";
 
-        link.appendChild(logo);
-        link.appendChild(spanTitle);
+    link.appendChild(logo);
+    link.appendChild(spanTitle);
 
+    const button = document.createElement("button");
+    button.id = "logout";
+    button.className = "btn btn--warning";
 
-        const button = document.createElement('button');
-        button.id = 'logout';
-        button.className = 'btn btn--warning';
+    const spanBtn = document.createElement("span");
+    spanBtn.textContent = "Delete User";
 
-        const spanBtn = document.createElement('span');
-        spanBtn.textContent = 'Delete User';
+    button.appendChild(spanBtn);
 
-        button.appendChild(spanBtn);
+    nav.appendChild(link);
+    nav.appendChild(button);
 
-        nav.appendChild(link);
-        nav.appendChild(button);
+    return nav;
+  }
 
-        return nav;
-    }
-
-    style(shadowRoot) {
-
-        const sheet = new CSSStyleSheet();
-        sheet.replaceSync(`
+  style(shadowRoot) {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(`
 *,
 *::before,
 *::after {
@@ -319,7 +316,7 @@ p {
   display: none;
 }
 
-    
+
 
 
             /* navbar */
@@ -359,30 +356,30 @@ p {
             }
 
 `);
-        shadowRoot.adoptedStyleSheets = [sheet];
+    shadowRoot.adoptedStyleSheets = [sheet];
+  }
 
+  initInteractivity(shadowRoot) {
+    const storedName = localStorage.getItem("userName");
+    if (storedName) {
+      shadowRoot.getElementById("logout").style.display = "flex";
+    } else {
+      shadowRoot.getElementById("logout").style.display = "none";
     }
 
-    initInteractivity(shadowRoot) {
-        const storedName = localStorage.getItem('userName');
-        if (storedName) {
-            shadowRoot.getElementById("logout").style.display = 'flex'
-        } else {
-            shadowRoot.getElementById("logout").style.display = 'none'
-        }
+    shadowRoot.getElementById("logout").addEventListener("click", () => {
+      if (confirm("Clear data?")) {
+        localStorage.removeItem("userName");
+        location.reload();
+      }
+    });
 
-        shadowRoot.getElementById('logout').addEventListener('click', () => {
-            if (confirm('Clear data?')) {
-                localStorage.removeItem('userName'); location.reload();
-            }
-        });
-
-        window.addEventListener("addUserName", function (event) {            
-            if (event.detail.key === "userName") {
-                shadowRoot.getElementById("logout").style.display = 'flex'
-            }
-        });
-    }
+    window.addEventListener("addUserName", function (event) {
+      if (event.detail.key === "userName") {
+        shadowRoot.getElementById("logout").style.display = "flex";
+      }
+    });
+  }
 }
 
-customElements.define('nav-component', NavComponent);
+customElements.define("nav-component", NavComponent);
